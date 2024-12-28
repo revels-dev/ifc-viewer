@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IFC Viewer</title>
+    <script src="https://unpkg.com/ifcjs/dist/IFC.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        #viewer-container {
+            width: 100vw;
+            height: 100vh;
+        }
+        #file-input {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <input type="file" id="file-input" accept=".ifc" />
+    <div id="viewer-container"></div>
+
+    <script>
+        const container = document.getElementById('viewer-container');
+        const fileInput = document.getElementById('file-input');
+
+        // Initialize the IFC.js viewer
+        const viewer = new IfcViewerAPI({ container });
+        viewer.addAxes();
+        viewer.addGrid();
+        viewer.setupLights();
+
+        // Handle file input
+        fileInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                await viewer.IFC.loadIfcUrl(url);
+                URL.revokeObjectURL(url);
+            }
+        });
+
+        // Resize the viewer when the window size changes
+        window.addEventListener('resize', () => {
+            viewer.IFC.context.resize();
+        });
+    </script>
+</body>
+</html>
